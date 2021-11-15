@@ -1,0 +1,451 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "groupLocation": {
+            "type": "string",
+            "defaultValue": "eastus",
+            "metadata": {
+                "description": "Specifies the location of the Resource Group."
+            }
+        },
+        "groupName": {
+            "type": "string",
+            "defaultValue": "rg-azure-bot",
+            "metadata": {
+                "description": "Specifies the name of the Resource Group."
+            }
+        },
+        "appId": {
+            "type": "string",
+            "metadata": {
+                "description": "Active Directory App ID, set as MicrosoftAppId in the Web App's Application Settings."
+            }
+        },
+        "appSecret": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Active Directory App Password, set as MicrosoftAppPassword in the Web App's Application Settings."
+            }
+        },
+        "botId": {
+            "type": "string",
+            "defaultValue": "bot-azure-bot",
+            "metadata": {
+                "description": "The globally unique and immutable bot ID. Also used to configure the displayName of the bot, which is mutable."
+            }
+        },
+        "newStorageAccountName": {
+            "type": "string",
+            "defaultValue": "stazurebotticketservice",
+            "metadata": {
+                "description": "The name of the Storage Account."
+            }
+        },
+        "newAppServicePlanName": {
+            "type": "string",
+            "defaultValue": "plan-azure-bot",
+            "metadata": {
+                "description": "The name of the App Service Plan."
+            }
+        },
+        "newWebAppName": {
+            "type": "string",
+            "defaultValue": "web-azure-bot",
+            "metadata": {
+                "description": "The globally unique name of the Web App."
+            }
+        },
+        "newBotAppName": {
+            "type": "string",
+            "defaultValue": "app-azure-bot",
+            "metadata": {
+                "description": "The globally unique name of the Web App."
+            }
+        },
+        "newFuncAppName": {
+            "type": "string",
+            "defaultValue": "func-azure-bot",
+            "metadata": {
+                "description": "The globally unique name of the Function App."
+            }
+        },
+        "dbservername": {
+            "type": "string",
+            "defaultValue": "sql-azure-bot",
+            "metadata": {
+                "description": "The DB server name."
+            }
+        },
+        "sqlDBName": {
+            "type": "string",
+            "defaultValue": "sqldb-azure-bot",
+            "metadata": {
+                "description": "The DB name."
+            }
+        },
+        "newKeyVaultName": {
+            "type": "string",
+            "defaultValue": "kv-azure-bot",
+            "metadata": {
+                "description": "The Key Vault name."
+            }
+        },
+        "newWorkspaceName": {
+            "type": "string",
+            "defaultValue": "log-azure-bot",
+            "metadata": {
+                "description": "The log workspace name."
+            }
+        },
+        "administratorlogin": {
+            "type": "string",
+            "defaultValue": "adminuser",
+            "metadata": {
+                "description": "The Admin Login."
+            }
+        },
+        "administratorLoginPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The Admin Login password."
+            }
+        },
+        "LUISAuthoringResourceName": {
+            "defaultValue": "luis-auth-azure-bot",
+            "type": "String",
+            "metadata": {
+                "description": "The name for the LUIS Authoring resource."
+            }
+        },
+        "LUISPredictionResourceName": {
+            "defaultValue": "luis-pred-azure-bot",
+            "type": "String",
+            "metadata": {
+                "description": "The name for the LUIS Prediction resource."
+            }
+        }
+    },
+    "variables": {
+        "siteHost": "[concat(parameters('newWebAppName'), '.azurewebsites.net')]",
+        "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]",
+        "resourceGroupId": "[concat(subscription().id, '/resourceGroups/', parameters('groupName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Sql/servers",
+            "apiVersion": "2015-05-01-preview",
+            "name": "[parameters('dbserverName')]",
+            "location": "[parameters('groupLocation')]",
+            "properties": {
+                "administratorLogin": "[parameters('administratorLogin')]",
+                "administratorLoginPassword": "[parameters('administratorLoginPassword')]"
+            },
+            "resources": [
+                {
+                    "type": "databases",
+                    "apiVersion": "2020-08-01-preview",
+                    "name": "[parameters('sqlDBName')]",
+                    "location": "[parameters('groupLocation')]",
+                    "sku": {
+                        "name": "GP_S_Gen5",
+                        "tier": "GeneralPurpose",
+                        "family": "Gen5",
+                        "capacity": 1
+                    },
+                    "kind": "v12.0,user,vcore,serverless",
+                    "properties": {
+                        "collation": "SQL_Latin1_General_CP1_CI_AS",
+                        "maxSizeBytes": 8589934592,
+                        "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+                        "zoneRedundant": false,
+                        "readScale": "Disabled",
+                        "autoPauseDelay": 60,
+                        "requestedBackupStorageRedundancy": "Local",
+                        "minCapacity": 0.5,
+                        "isLedgerOn": false
+                    },
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Sql/servers', concat(parameters('dbserverName')))]"
+                    ]
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.KeyVault/vaults",
+            "name": "[parameters('newKeyVaultName')]",
+            "apiVersion": "2016-10-01",
+            "location": "[parameters('groupLocation')]",
+            "properties": {
+                "sku": {
+                    "family": "A",
+                    "name": "standard"
+                },
+                "tenantId": "[subscription().tenantid]",
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantid]",
+                        "objectId": "[reference(resourceId('Microsoft.Web/sites', parameters('newFuncAppName')),'2019-08-01', 'full').identity.principalId]",
+                        "permissions": {
+                            "keys": [],
+                            "secrets": [
+                                "get"
+                            ],
+                            "certificates": []
+                        }
+                    }
+                ],
+                "enabledForDeployment": false,
+                "enabledForDiskEncryption": false,
+                "enabledForTemplateDeployment": false
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('newFuncAppName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "name": "[parameters('newStorageAccountName')]",
+            "location": "[parameters('groupLocation')]",
+            "sku": {
+                "name": "Standard_LRS",
+                "tier": "Standard"
+            },
+            "kind": "Storage"
+        },
+        {
+            "comments": "Create a new App Service Plan",
+            "type": "Microsoft.Web/serverfarms",
+            "name": "[parameters('newAppServicePlanName')]",
+            "apiVersion": "2018-02-01",
+            "location": "[parameters('groupLocation')]",
+            "sku": {
+                "name": "S1",
+                "tier": "Standard",
+                "size": "S1",
+                "family": "S",
+                "capacity": 1
+            },
+            "kind": "windows",
+            "properties": {
+                "name": "[parameters('newAppServicePlanName')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2020-12-01",
+            "name": "[parameters('newFuncAppName')]",
+            "location": "[parameters('groupLocation')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/serverfarms', parameters('newAppServicePlanName'))]"
+            ],
+            "kind": "functionapp",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('newAppServicePlanName'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/providers/diagnosticSettings",
+            "apiVersion": "2017-05-01-preview",
+            "name": "[concat(parameters('newFuncAppName'), '/Microsoft.Insights/', 'diagnostic')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('newFuncAppName'))]",
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('newWorkspaceName'))]"
+            ],
+            "properties": {
+                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('newWorkspaceName'))]",
+                "logs": [
+                    {
+                        "category": "FunctionAppLogs",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "Create a Web App using the new App Service Plan",
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2015-08-01",
+            "location": "[parameters('groupLocation')]",
+            "kind": "app",
+            "dependsOn": [
+                "[concat(variables('resourceGroupId'), '/providers/Microsoft.Web/serverfarms/', parameters('newAppServicePlanName'))]"
+            ],
+            "name": "[parameters('newWebAppName')]",
+            "properties": {
+                "name": "[parameters('newWebAppName')]",
+                "serverFarmId": "[parameters('newAppServicePlanName')]",
+                "siteConfig": {
+                    "appSettings": [
+                    ],
+                    "cors": {
+                        "allowedOrigins": [
+                            "https://botservice.hosting.portal.azure.net",
+                            "https://hosting.onecloud.azure-test.net/"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/providers/diagnosticSettings",
+            "apiVersion": "2017-05-01-preview",
+            "name": "[concat(parameters('newWebAppName'), '/Microsoft.Insights/', 'diagnostic')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('newWebAppName'))]",
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('newWorkspaceName'))]"
+            ],
+            "properties": {
+                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('newWorkspaceName'))]",
+                "logs": [
+                    {
+                        "category": "AppServiceAppLogs",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+        {
+            "comments": "Create a Web App using the new App Service Plan",
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2015-08-01",
+            "location": "[parameters('groupLocation')]",
+            "kind": "app",
+            "dependsOn": [
+                "[concat(variables('resourceGroupId'), '/providers/Microsoft.Web/serverfarms/', parameters('newAppServicePlanName'))]"
+            ],
+            "name": "[parameters('newBotAppName')]",
+            "properties": {
+                "name": "[parameters('newBotAppName')]",
+                "serverFarmId": "[parameters('newAppServicePlanName')]",
+                "siteConfig": {
+                    "appSettings": [
+                        {
+                            "name": "MicrosoftAppId",
+                            "value": "[parameters('appId')]"
+                        },
+                        {
+                            "name": "MicrosoftAppPassword",
+                            "value": "[parameters('appSecret')]"
+                        }
+                    ],
+                    "cors": {
+                        "allowedOrigins": [
+                            "https://botservice.hosting.portal.azure.net",
+                            "https://hosting.onecloud.azure-test.net/",
+                            "https://portal.azure.com"
+                        ]
+                    }
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/providers/diagnosticSettings",
+            "apiVersion": "2017-05-01-preview",
+            "name": "[concat(parameters('newBotAppName'), '/Microsoft.Insights/', 'diagnostic')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('newBotAppName'))]",
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('newWorkspaceName'))]"
+            ],
+            "properties": {
+                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('newWorkspaceName'))]",
+                "logs": [
+                    {
+                        "category": "AppServiceAppLogs",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "enabled": true
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "name": "[parameters('newWorkspaceName')]",
+            "apiVersion": "2015-11-01-preview",
+            "location": "[parameters('groupLocation')]",
+            "properties": {
+                "sku": {
+                    "name": "pergb2018"
+                },
+                "retentionInDays": 30,
+                "features": {
+                    "searchVersion": 1,
+                    "legacy": 0,
+                    "enableLogAccessUsingOnlyResourcePermissions": "true"
+                }
+            }
+        },
+        {
+            "apiVersion": "2021-03-01",
+            "type": "Microsoft.BotService/botServices",
+            "name": "[parameters('botId')]",
+            "location": "global",
+            "kind": "azurebot",
+            "sku": {
+                "name": "S1"
+            },
+            "properties": {
+                "name": "[parameters('botId')]",
+                "displayName": "[parameters('botId')]",
+                "iconUrl": "https://docs.botframework.com/static/devportal/client/images/bot-framework-default.png",
+                "endpoint": "[variables('botEndpoint')]",
+                "msaAppId": "[parameters('appId')]",
+                "luisAppIds": [],
+                "schemaTransformationVersion": "1.3",
+                "isCmekEnabled": false,
+                "isIsolated": false
+            },
+            "dependsOn": [
+                "[concat(variables('resourceGroupId'), '/providers/Microsoft.Web/sites/', parameters('newWebAppName'))]"
+            ]
+        },
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[parameters('LUISPredictionResourceName')]",
+            "location": "westus",
+            "sku": {
+                "name": "F0"
+            },
+            "kind": "LUIS",
+            "properties": {
+                "customSubDomainName": "[parameters('LUISPredictionResourceName')]"
+            }
+        },
+        {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "apiVersion": "2017-04-18",
+            "name": "[parameters('LUISAuthoringResourceName')]",
+            "location": "westus",
+            "sku": {
+                "name": "F0"
+            },
+            "kind": "LUIS.Authoring",
+            "properties": {
+                "customSubDomainName": "[parameters('LUISAuthoringResourceName')]"
+            }
+        }
+    ],
+    "outputs": {}
+}

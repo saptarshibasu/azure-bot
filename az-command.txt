@@ -1,0 +1,8 @@
+az login
+az account set --subscription <subscription name>
+az ad app create --display-name "azure-bot" --password "Atleast16characters_0" --available-to-other-tenants
+az group create --location "eastus" --name "rg-azure-bot"
+
+az cognitiveservices account purge --location westus --name luis-pred-azure-bot --resource-group rg-azure-bot
+az cognitiveservices account purge --location westus --name luis-auth-azure-bot --resource-group rg-azure-bot
+az keyvault purge --name "kv-azure-bot"
