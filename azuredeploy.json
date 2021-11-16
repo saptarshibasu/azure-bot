@@ -464,7 +464,7 @@
                 "forceUpdateTag": "1",
                 "azPowerShellVersion": "6.4",
                 "arguments": "[concat('-serverInstance', ' ', parameters('dbservername'), ' ', '-database', ' ', parameters('sqlDBName'), ' ', '-adminUsername', ' ', parameters('administratorlogin'), ' ', '-adminPassword', ' ', parameters('administratorLoginPassword'), ' ', '-userPassword', ' ', parameters('userPassword'), ' ', '-userLogin', ' ', parameters('userLogin'))]",
-                "primaryScriptUri": "https://raw.githubusercontent.com/saptarshibasu/azure-bot/main/db-deploy-script.ps1?token=ABT75RDBM3BLIYZ3JT2SEFTBSO6YM",
+                "primaryScriptUri": "https://raw.githubusercontent.com/saptarshibasu/azure-bot/main/db-deploy-script.ps1",
                 "supportingScriptUris":[],
                 "timeout": "PT30M",
                 "cleanupPreference": "OnSuccess",
