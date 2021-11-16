@@ -464,15 +464,7 @@
                 "forceUpdateTag": "1",
                 "azPowerShellVersion": "6.4",
                 "arguments": "[concat('-serverInstance', ' ', parameters('dbservername'), ' ', '-database', ' ', parameters('sqlDBName'), ' ', '-adminUsername', ' ', parameters('administratorlogin'), ' ', '-adminPassword', ' ', parameters('administratorLoginPassword'), ' ', '-userPassword', ' ', parameters('userPassword'), ' ', '-userLogin', ' ', parameters('userLogin'))]",
-                "scriptContent": "
-                    param([string] $serverInstance, [string] $database, [string] $adminUsername, [string] $adminPassword, [string] $userPassword, [string] $userLogin)
-                    $StringArray = \"BOT_USER_PWD=$userPassword\",\"BOT_USER_NM=$userLogin\"
-                    $serverInstanceUrl = \"$serverInstance.database.windows.net\"
-                    find-module sqlserver | Install-Module -AllowClobber -Force
-                    Invoke-Sqlcmd -InputFile \".\\db-script-masterdb.sql\" -Variable $StringArray -ServerInstance $serverInstanceUrl -Database master -Username $adminUsername -Password $adminPassword
-                    Invoke-Sqlcmd -InputFile \".\\db-script-azurebotdb.sql\" -Variable $StringArray -ServerInstance $serverInstanceUrl -Database $database -Username $adminUsername -Password $adminPassword
-                    Invoke-Sqlcmd -InputFile \".\\db-script-azurebotuser.sql\" -ServerInstance $serverInstanceUrl -Database $database -Username $userLogin -Password $userPassword
-                ",
+                "primaryScriptUri": "https://raw.githubusercontent.com/saptarshibasu/azure-bot/main/db-deploy-script.ps1?token=ABT75RDBM3BLIYZ3JT2SEFTBSO6YM",
                 "supportingScriptUris":[],
                 "timeout": "PT30M",
                 "cleanupPreference": "OnSuccess",
