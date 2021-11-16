@@ -1,10 +1,3 @@
-CREATE LOGIN azurebot WITH password = '@zureBot@123';
-
-CREATE USER azurebotuser FROM LOGIN azurebot;
-
-EXEC sp_addrolemember 'db_datawriter', 'azurebotuser';
-EXEC sp_addrolemember 'db_datareader', 'azurebotuser';
-
 CREATE TABLE TICKET(
     TICKET_ID VARCHAR(10),
     STATUS VARCHAR(10)

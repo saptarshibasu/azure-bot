@@ -9,13 +9,6 @@
                 "description": "Specifies the location of the Resource Group."
             }
         },
-        "groupName": {
-            "type": "string",
-            "defaultValue": "rg-azure-bot",
-            "metadata": {
-                "description": "Specifies the name of the Resource Group."
-            }
-        },
         "appId": {
             "type": "string",
             "metadata": {
@@ -111,6 +104,19 @@
                 "description": "The Admin Login password."
             }
         },
+        "userlogin": {
+            "type": "string",
+            "defaultValue": "azurebot",
+            "metadata": {
+                "description": "The User Login."
+            }
+        },
+        "userPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The User Login."
+            }
+        },
         "LUISAuthoringResourceName": {
             "defaultValue": "luis-auth-azure-bot",
             "type": "String",
@@ -128,8 +134,7 @@
     },
     "variables": {
         "siteHost": "[concat(parameters('newWebAppName'), '.azurewebsites.net')]",
-        "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]",
-        "resourceGroupId": "[concat(subscription().id, '/resourceGroups/', parameters('groupName'))]"
+        "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]"
     },
     "resources": [
         {
@@ -279,7 +284,7 @@
             "location": "[parameters('groupLocation')]",
             "kind": "app",
             "dependsOn": [
-                "[concat(variables('resourceGroupId'), '/providers/Microsoft.Web/serverfarms/', parameters('newAppServicePlanName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', parameters('newAppServicePlanName'))]"
             ],
             "name": "[parameters('newWebAppName')]",
             "properties": {
@@ -328,7 +333,7 @@
             "location": "[parameters('groupLocation')]",
             "kind": "app",
             "dependsOn": [
-                "[concat(variables('resourceGroupId'), '/providers/Microsoft.Web/serverfarms/', parameters('newAppServicePlanName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', parameters('newAppServicePlanName'))]"
             ],
             "name": "[parameters('newBotAppName')]",
             "properties": {
@@ -417,7 +422,7 @@
                 "isIsolated": false
             },
             "dependsOn": [
-                "[concat(variables('resourceGroupId'), '/providers/Microsoft.Web/sites/', parameters('newWebAppName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', parameters('newAppServicePlanName'))]"
             ]
         },
         {
@@ -444,6 +449,34 @@
             "kind": "LUIS.Authoring",
             "properties": {
                 "customSubDomainName": "[parameters('LUISAuthoringResourceName')]"
+            }
+        },
+        {
+            "type": "Microsoft.Resources/deploymentScripts",
+            "apiVersion": "2020-10-01",
+            "name": "dbSetup",
+            "location": "[parameters('groupLocation')]",
+            "kind": "AzurePowerShell",
+            "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('dbservername'), parameters('sqlDBName'))]"
+            ],
+            "properties": {
+                "forceUpdateTag": "1",
+                "azPowerShellVersion": "6.4",
+                "arguments": "[concat('-serverInstance', ' ', parameters('dbservername'), ' ', '-database', ' ', parameters('sqlDBName'), ' ', '-adminUsername', ' ', parameters('administratorlogin'), ' ', '-adminPassword', ' ', parameters('administratorLoginPassword'), ' ', '-userPassword', ' ', parameters('userPassword'), ' ', '-userLogin', ' ', parameters('userLogin'))]",
+                "scriptContent": "
+                    param([string] $serverInstance, [string] $database, [string] $adminUsername, [string] $adminPassword, [string] $userPassword, [string] $userLogin)
+                    $StringArray = \"BOT_USER_PWD=$userPassword\",\"BOT_USER_NM=$userLogin\"
+                    $serverInstanceUrl = \"$serverInstance.database.windows.net\"
+                    find-module sqlserver | Install-Module -AllowClobber -Force
+                    Invoke-Sqlcmd -InputFile \".\\db-script-masterdb.sql\" -Variable $StringArray -ServerInstance $serverInstanceUrl -Database master -Username $adminUsername -Password $adminPassword
+                    Invoke-Sqlcmd -InputFile \".\\db-script-azurebotdb.sql\" -Variable $StringArray -ServerInstance $serverInstanceUrl -Database $database -Username $adminUsername -Password $adminPassword
+                    Invoke-Sqlcmd -InputFile \".\\db-script-azurebotuser.sql\" -ServerInstance $serverInstanceUrl -Database $database -Username $userLogin -Password $userPassword
+                ",
+                "supportingScriptUris":[],
+                "timeout": "PT30M",
+                "cleanupPreference": "OnSuccess",
+                "retentionInterval": "P1D"
             }
         }
     ],

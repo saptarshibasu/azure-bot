@@ -2,7 +2,14 @@ az login
 az account set --subscription <subscription name>
 az ad app create --display-name "azure-bot" --password "Atleast16characters_0" --available-to-other-tenants
 az group create --location "eastus" --name "rg-azure-bot"
+az deployment group create --resource-group "rg-azure-bot" --template-file "azuredeploy.json"
 
 az cognitiveservices account purge --location westus --name luis-pred-azure-bot --resource-group rg-azure-bot
 az cognitiveservices account purge --location westus --name luis-auth-azure-bot --resource-group rg-azure-bot
 az keyvault purge --name "kv-azure-bot"
+
+
+$StringArray = "BOT_USER_PWD='@zureBot@123'"
+Invoke-Sqlcmd -InputFile ".\db-script-masterdb.sql" -Variable $StringArray -ServerInstance sql-azure-bot.database.windows.net -Database master -Username adminuser -Password Er!csson1419
+Invoke-Sqlcmd -InputFile ".\db-script-azurebotdb.sql" -ServerInstance sql-azure-bot.database.windows.net -Database sqldb-azure-bot -Username adminuser -Password Er!csson1419
+Invoke-Sqlcmd -InputFile ".\db-script-azurebotuser.sql" -ServerInstance sql-azure-bot.database.windows.net -Database sqldb-azure-bot -Username azurebot -Password @zureBot@123

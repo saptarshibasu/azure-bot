@@ -1,0 +1,1 @@
+CREATE LOGIN $(BOT_USER_NM) WITH password = '$(BOT_USER_PWD)';
