@@ -37,9 +37,16 @@
         },
         "newAppServicePlanName": {
             "type": "string",
-            "defaultValue": "plan-azure-bot",
+            "defaultValue": "plan-app-azure-bot",
             "metadata": {
                 "description": "The name of the App Service Plan."
+            }
+        },
+        "newFuncAppServicePlanName": {
+            "type": "string",
+            "defaultValue": "plan-func-azure-bot",
+            "metadata": {
+                "description": "The name of the Func App Service Plan."
             }
         },
         "newWebAppName": {
@@ -134,7 +141,8 @@
     },
     "variables": {
         "siteHost": "[concat(parameters('newWebAppName'), '.azurewebsites.net')]",
-        "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]"
+        "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]",
+        "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('newStorageAccountName'))]"
     },
     "resources": [
         {
@@ -221,6 +229,21 @@
             ]
         },
         {
+            "type": "Microsoft.KeyVault/vaults/secrets",
+            "apiVersion": "2021-06-01-preview",
+            "name": "[concat(parameters('newKeyVaultName'), '/db-password')]",
+            "location": "eastus",
+            "dependsOn": [
+                "[resourceId('Microsoft.KeyVault/vaults', parameters('newKeyVaultName'))]"
+            ],
+            "properties": {
+                "attributes": {
+                    "enabled": true
+                },
+                "value": "[parameters('userPassword')]"
+            }
+        },
+        {
             "type": "Microsoft.Storage/storageAccounts",
             "apiVersion": "2019-06-01",
             "name": "[parameters('newStorageAccountName')]",
@@ -244,9 +267,28 @@
                 "family": "S",
                 "capacity": 1
             },
-            "kind": "windows",
+            "kind": "functionapp",
             "properties": {
                 "name": "[parameters('newAppServicePlanName')]"
+            }
+        },
+        {
+            "comments": "Create a new Function App Service Plan",
+            "type": "Microsoft.Web/serverfarms",
+            "name": "[parameters('newFuncAppServicePlanName')]",
+            "apiVersion": "2018-02-01",
+            "location": "[parameters('groupLocation')]",
+            "sku": {
+                "name":"Y1",
+                "tier":"Dynamic",
+                "size":"Y1",
+                "family":"Y",
+                "capacity":0
+            },
+            "kind": "functionapp",
+            "properties": {
+                "name": "[parameters('newFuncAppServicePlanName')]",
+                "computeMode":"Dynamic"
             }
         },
         {
@@ -255,14 +297,40 @@
             "name": "[parameters('newFuncAppName')]",
             "location": "[parameters('groupLocation')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('newAppServicePlanName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', parameters('newFuncAppServicePlanName'))]",
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('newStorageAccountName'))]"
             ],
             "kind": "functionapp",
             "identity": {
                 "type": "SystemAssigned"
             },
             "properties": {
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('newAppServicePlanName'))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('newFuncAppServicePlanName'))]",
+                "siteConfig": {
+                    "appSettings": [
+                    {
+                        "name": "FUNCTIONS_EXTENSION_VERSION",
+                        "value": "~3"
+                    },
+                    {
+                        "name": "FUNCTIONS_WORKER_RUNTIME",
+                        "value": "java"
+                    },
+                    {
+                        "name": "AzureWebJobsStorage",
+                        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('newStorageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1, ';EndpointSuffix=core.windows.net')]"
+                    },
+                    {
+                        "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+                        "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', parameters('newStorageAccountName'), ';AccountKey=', listKeys(variables('storageAccountid'),'2015-05-01-preview').key1, ';EndpointSuffix=core.windows.net')]"
+                    },
+                    {
+                        "name": "WEBSITE_CONTENTSHARE",
+                        "value": "[toLower(parameters('newFuncAppName'))]"
+                    }
+                    ],
+                    "javaVersion": "11"
+                }
             }
         },
         {
