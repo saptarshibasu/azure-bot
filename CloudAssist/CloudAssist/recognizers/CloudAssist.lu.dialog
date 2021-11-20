@@ -1,0 +1,8 @@
+{
+  "$kind": "Microsoft.MultiLanguageRecognizer",
+  "id": "LUIS_CloudAssist",
+  "recognizers": {
+    "en-us": "CloudAssist.en-us.lu",
+    "": "CloudAssist.en-us.lu"
+  }
+}

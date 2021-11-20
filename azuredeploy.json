@@ -58,7 +58,7 @@
         },
         "newBotAppName": {
             "type": "string",
-            "defaultValue": "app-azure-bot",
+            "defaultValue": "app-bot-azure-bot",
             "metadata": {
                 "description": "The globally unique name of the Web App."
             }
@@ -137,10 +137,22 @@
             "metadata": {
                 "description": "The name for the LUIS Prediction resource."
             }
-        }
+        },
+        "newQnaAccountName": {
+            "type": "string",
+			"defaultValue": "qna-azure-bot"
+        },
+        "newQnaAppName": {
+            "type": "string",
+			"defaultValue": "app-qna-azure-bot"
+        },
+		"newSearchName": {
+			"type": "string",
+			"defaultValue": "srch-azure-bot"
+		}
     },
     "variables": {
-        "siteHost": "[concat(parameters('newWebAppName'), '.azurewebsites.net')]",
+        "siteHost": "[concat(parameters('newBotAppName'), '.azurewebsites.net')]",
         "botEndpoint": "[concat('https://', variables('siteHost'), '/api/messages')]",
         "storageAccountId": "[resourceId('Microsoft.Storage/storageAccounts', parameters('newStorageAccountName'))]"
     },
@@ -579,6 +591,106 @@
                 "timeout": "PT30M",
                 "cleanupPreference": "OnSuccess",
                 "retentionInterval": "P1D"
+            }
+        },
+                {
+            "type": "Microsoft.CognitiveServices/accounts",
+            "kind": "QnAMaker",
+            "name": "[parameters('newQnaAccountName')]",
+            "apiVersion": "2021-04-30",
+            "location": "westus",
+            "sku": {
+                "name": "F0"
+            },
+            "properties": {
+                "apiProperties": {
+                    "qnaRuntimeEndpoint": "[concat('https://',reference(resourceId('Microsoft.Web/sites', parameters('newQnaAppName'))).hostNames[0])]"
+                },
+                "customSubDomainName": "[parameters('newQnaAccountName')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/Sites', parameters('newQnaAppName'))]",
+                "[resourceId('Microsoft.Search/searchServices/', parameters('newSearchName'))]"
+            ]
+        },
+        {
+            "name": "[parameters('newSearchName')]",
+            "type": "Microsoft.Search/searchServices",
+            "apiVersion": "2015-08-19",
+            "location": "[parameters('groupLocation')]",
+            "tags": {},
+            "properties": {
+                "replicaCount": 1,
+                "partitionCount": 1,
+                "hostingMode": "Default"
+            },
+            "sku": {
+                "name": "free"
+            }        
+		},
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2016-08-01",
+            "name": "[parameters('newQnaAppName')]",
+            "location": "[parameters('groupLocation')]",
+            "properties": {
+                "enabled": true,
+                "siteConfig": {
+                    "cors": {
+                        "allowedOrigins": [
+                            "*"
+                        ]
+                    }
+                },
+                "name": "[parameters('newQnaAppName')]",
+                "serverFarmId": "[concat('/subscriptions/', subscription().SubscriptionId,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/serverfarms/', parameters('newAppServicePlanName'))]",
+                "hostingEnvironment": ""
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/serverfarms/', parameters('newAppServicePlanName'))]"
+            ],
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "appsettings",
+                    "type": "config",
+                    "dependsOn": [
+                        "[resourceId('Microsoft.Web/Sites', parameters('newQnaAppName'))]",
+                        "[resourceId('Microsoft.Search/searchServices/', parameters('newSearchName'))]"
+                    ],
+                    "properties": {
+                        "AzureSearchName": "[parameters('newSearchName')]",
+                        "AzureSearchAdminKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices/', parameters('newSearchName')), '2015-08-19').primaryKey]",
+                        "PrimaryEndpointKey": "[concat(parameters('newQnaAppName'), '-PrimaryEndpointKey')]",
+                        "SecondaryEndpointKey": "[concat(parameters('newQnaAppName'), '-SecondaryEndpointKey')]",
+                        "DefaultAnswer": "I don't know this. I'm stil learning.",
+                        "QNAMAKER_EXTENSION_VERSION": "latest"
+                    }
+                }
+            ]
+        },
+        {
+            "type": "Microsoft.Web/sites/providers/diagnosticSettings",
+            "apiVersion": "2017-05-01-preview",
+            "name": "[concat(parameters('newQnaAppName'), '/Microsoft.Insights/', 'diagnostic')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Web/sites', parameters('newQnaAppName'))]",
+                "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('newWorkspaceName'))]"
+            ],
+            "properties": {
+                "workspaceId": "[resourceId('Microsoft.OperationalInsights/workspaces', parameters('newWorkspaceName'))]",
+                "logs": [
+                    {
+                        "category": "AppServiceAppLogs",
+                        "enabled": true
+                    }
+                ],
+                "metrics": [
+                    {
+                        "category": "AllMetrics",
+                        "enabled": true
+                    }
+                ]
             }
         }
     ],

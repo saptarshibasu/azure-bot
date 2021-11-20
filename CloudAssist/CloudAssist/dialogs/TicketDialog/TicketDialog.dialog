@@ -1,0 +1,542 @@
+{
+  "$kind": "Microsoft.AdaptiveDialog",
+  "$designer": {
+    "id": "Ysujea",
+    "name": "TicketDialog",
+    "comment": ""
+  },
+  "autoEndDialog": false,
+  "triggers": [
+    {
+      "$kind": "Microsoft.OnIntent",
+      "$designer": {
+        "id": "yxQw5I",
+        "name": "ShowTicket"
+      },
+      "intent": "ShowTicket",
+      "actions": [
+        {
+          "$kind": "Microsoft.IfCondition",
+          "$designer": {
+            "id": "PGw1YJ"
+          },
+          "condition": "=@ticketid==null",
+          "elseActions": [
+            {
+              "$kind": "Microsoft.SetProperty",
+              "$designer": {
+                "id": "DaOXPK"
+              },
+              "property": "user.ticketid",
+              "value": "=@ticketid"
+            }
+          ],
+          "actions": [
+            {
+              "$kind": "Microsoft.TextInput",
+              "$designer": {
+                "id": "bC8V2W"
+              },
+              "disabled": false,
+              "maxTurnCount": 3,
+              "alwaysPrompt": false,
+              "allowInterruptions": true,
+              "unrecognizedPrompt": "",
+              "prompt": "${TextInput_Prompt_bC8V2W()}",
+              "property": "user.ticketid",
+              "outputFormat": "=trim(this.value)",
+              "validations": [
+                "=isMatch(this.value, \"^TKT[0-9]{7}$\")"
+              ],
+              "invalidPrompt": "${TextInput_InvalidPrompt_bC8V2W()}"
+            }
+          ]
+        },
+        {
+          "$kind": "Microsoft.HttpRequest",
+          "$designer": {
+            "id": "Rc76tC"
+          },
+          "method": "GET",
+          "url": "https://func-azure-bot.azurewebsites.net/api/getTicketStatus?id=${user.ticketid}",
+          "resultProperty": "dialog.api_response"
+        },
+        {
+          "$kind": "Microsoft.IfCondition",
+          "$designer": {
+            "id": "q0vCKJ"
+          },
+          "condition": "=dialog.api_response.content.result=='success'",
+          "actions": [
+            {
+              "$kind": "Microsoft.SendActivity",
+              "$designer": {
+                "id": "iIwrRG"
+              },
+              "activity": "${SendActivity_iIwrRG()}"
+            }
+          ],
+          "elseActions": [
+            {
+              "$kind": "Microsoft.IfCondition",
+              "$designer": {
+                "id": "nFfxrB"
+              },
+              "condition": "=dialog.api_response.content.result == 'notfound'",
+              "actions": [
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "$designer": {
+                    "id": "Bz40wA"
+                  },
+                  "activity": "${SendActivity_Bz40wA()}"
+                }
+              ],
+              "elseActions": [
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "$designer": {
+                    "id": "scaOaO"
+                  },
+                  "activity": "${SendActivity_scaOaO()}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$kind": "Microsoft.DeleteProperties",
+          "$designer": {
+            "id": "lBwOSa"
+          },
+          "properties": [
+            "dialog.api_response",
+            "user.ticketid"
+          ]
+        },
+        {
+          "$kind": "Microsoft.EndTurn",
+          "$designer": {
+            "id": "tRvlo6"
+          }
+        }
+      ]
+    },
+    {
+      "$kind": "Microsoft.OnIntent",
+      "$designer": {
+        "id": "bkiCtu",
+        "name": "CloseTicket"
+      },
+      "intent": "CloseTicket",
+      "actions": [
+        {
+          "$kind": "Microsoft.IfCondition",
+          "$designer": {
+            "id": "okTosC"
+          },
+          "condition": "=@ticketid==null",
+          "elseActions": [
+            {
+              "$kind": "Microsoft.SetProperty",
+              "$designer": {
+                "id": "wq4DL3"
+              },
+              "property": "user.ticketid",
+              "value": "=@ticketid"
+            }
+          ],
+          "actions": [
+            {
+              "$kind": "Microsoft.TextInput",
+              "$designer": {
+                "id": "xnAPk5"
+              },
+              "disabled": false,
+              "maxTurnCount": 3,
+              "alwaysPrompt": false,
+              "allowInterruptions": true,
+              "unrecognizedPrompt": "",
+              "prompt": "${TextInput_Prompt_xnAPk5()}",
+              "property": "user.ticketid",
+              "outputFormat": "=trim(this.value)",
+              "validations": [
+                "=isMatch(this.value, \"^TKT[0-9]{7}$\")"
+              ],
+              "invalidPrompt": "${TextInput_InvalidPrompt_xnAPk5()}"
+            }
+          ]
+        },
+        {
+          "$kind": "Microsoft.HttpRequest",
+          "$designer": {
+            "id": "dlAkob"
+          },
+          "method": "GET",
+          "url": "https://func-azure-bot.azurewebsites.net/api/getTicketStatus?id=${user.ticketid}",
+          "resultProperty": "dialog.api_response"
+        },
+        {
+          "$kind": "Microsoft.IfCondition",
+          "$designer": {
+            "id": "KMKR8F"
+          },
+          "condition": "=dialog.api_response.content.result=='success' && dialog.api_response.content.status == 'CLSD'",
+          "actions": [
+            {
+              "$kind": "Microsoft.SendActivity",
+              "$designer": {
+                "id": "cc2TyA"
+              },
+              "activity": "${SendActivity_cc2TyA()}"
+            }
+          ],
+          "elseActions": [
+            {
+              "$kind": "Microsoft.IfCondition",
+              "$designer": {
+                "id": "WpH3B0"
+              },
+              "condition": "=dialog.api_response.content.result=='notfound'",
+              "actions": [
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "$designer": {
+                    "id": "kW23Fc"
+                  },
+                  "activity": "${SendActivity_kW23Fc()}"
+                }
+              ],
+              "elseActions": [
+                {
+                  "$kind": "Microsoft.IfCondition",
+                  "$designer": {
+                    "id": "TFCSxn"
+                  },
+                  "condition": "=dialog.api_response.content.result=='error'",
+                  "actions": [
+                    {
+                      "$kind": "Microsoft.SendActivity",
+                      "$designer": {
+                        "id": "aV3GYr"
+                      },
+                      "activity": "${SendActivity_aV3GYr()}"
+                    }
+                  ],
+                  "elseActions": [
+                    {
+                      "$kind": "Microsoft.ChoiceInput",
+                      "$designer": {
+                        "id": "JB5wJK"
+                      },
+                      "defaultLocale": "en-us",
+                      "disabled": false,
+                      "maxTurnCount": 3,
+                      "alwaysPrompt": false,
+                      "allowInterruptions": true,
+                      "prompt": "${ChoiceInput_Prompt_JB5wJK()}",
+                      "unrecognizedPrompt": "",
+                      "invalidPrompt": "",
+                      "choiceOptions": {
+                        "includeNumbers": true,
+                        "inlineOrMore": ", or ",
+                        "inlineOr": " or ",
+                        "inlineSeparator": ", "
+                      },
+                      "choices": [
+                        "Yes",
+                        "No"
+                      ],
+                      "property": "user.closeconfirm",
+                      "recognizerOptions": {
+                        "recognizeOrdinals": true
+                      }
+                    },
+                    {
+                      "$kind": "Microsoft.IfCondition",
+                      "$designer": {
+                        "id": "HxRfip"
+                      },
+                      "condition": "=user.closeconfirm=='Yes'",
+                      "actions": [
+                        {
+                          "$kind": "Microsoft.HttpRequest",
+                          "$designer": {
+                            "id": "i4l9aJ"
+                          },
+                          "method": "POST",
+                          "url": "https://func-azure-bot.azurewebsites.net/api/updateTicketStatus?id=${user.ticketid}&status=CLSD",
+                          "resultProperty": "dialog.api_response"
+                        },
+                        {
+                          "$kind": "Microsoft.IfCondition",
+                          "$designer": {
+                            "id": "J7fJV5"
+                          },
+                          "condition": "=dialog.api_response.content.result=='success'",
+                          "actions": [
+                            {
+                              "$kind": "Microsoft.SendActivity",
+                              "$designer": {
+                                "id": "jy0Iul"
+                              },
+                              "activity": "${SendActivity_jy0Iul()}"
+                            }
+                          ],
+                          "elseActions": [
+                            {
+                              "$kind": "Microsoft.SendActivity",
+                              "$designer": {
+                                "id": "RMlX8N"
+                              },
+                              "activity": "${SendActivity_RMlX8N()}"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$kind": "Microsoft.DeleteProperties",
+          "$designer": {
+            "id": "uO2vi9"
+          },
+          "properties": [
+            "dialog.api_response",
+            "user.ticketid",
+            "user.closeconfirm"
+          ]
+        },
+        {
+          "$kind": "Microsoft.EndTurn",
+          "$designer": {
+            "id": "lF3AOH"
+          }
+        }
+      ]
+    },
+    {
+      "$kind": "Microsoft.OnIntent",
+      "$designer": {
+        "id": "gbLqc4",
+        "name": "OpenTicket"
+      },
+      "intent": "OpenTicket",
+      "actions": [
+        {
+          "$kind": "Microsoft.IfCondition",
+          "$designer": {
+            "id": "mz9Wdc"
+          },
+          "condition": "=@ticketid==null",
+          "elseActions": [
+            {
+              "$kind": "Microsoft.SetProperty",
+              "$designer": {
+                "id": "UWaI1X"
+              },
+              "value": "=@ticketid",
+              "property": "user.ticketid"
+            }
+          ],
+          "actions": [
+            {
+              "$kind": "Microsoft.TextInput",
+              "$designer": {
+                "id": "LXnr80"
+              },
+              "disabled": false,
+              "maxTurnCount": 3,
+              "alwaysPrompt": false,
+              "allowInterruptions": true,
+              "unrecognizedPrompt": "",
+              "prompt": "${TextInput_Prompt_LXnr80()}",
+              "property": "user.ticketid",
+              "outputFormat": "=trim(this.value)",
+              "validations": [
+                "=isMatch(this.value, \"^TKT[0-9]{7}$\")"
+              ],
+              "invalidPrompt": "${TextInput_InvalidPrompt_LXnr80()}"
+            }
+          ]
+        },
+        {
+          "$kind": "Microsoft.HttpRequest",
+          "$designer": {
+            "id": "JO7wOi"
+          },
+          "method": "GET",
+          "url": "https://func-azure-bot.azurewebsites.net/api/getTicketStatus?id=${user.ticketid}",
+          "resultProperty": "dialog.api_response"
+        },
+        {
+          "$kind": "Microsoft.IfCondition",
+          "$designer": {
+            "id": "UNwd2t"
+          },
+          "condition": "=dialog.api_response.content.result=='success' && dialog.api_response.content.status == 'OPN'",
+          "actions": [
+            {
+              "$kind": "Microsoft.SendActivity",
+              "$designer": {
+                "id": "p1u6ZT"
+              },
+              "activity": "${SendActivity_p1u6ZT()}"
+            }
+          ],
+          "elseActions": [
+            {
+              "$kind": "Microsoft.IfCondition",
+              "$designer": {
+                "id": "Yq6rhV"
+              },
+              "condition": "=dialog.api_response.content.result=='notfound'",
+              "actions": [
+                {
+                  "$kind": "Microsoft.SendActivity",
+                  "$designer": {
+                    "id": "q8EXGA"
+                  },
+                  "activity": "${SendActivity_q8EXGA()}"
+                }
+              ],
+              "elseActions": [
+                {
+                  "$kind": "Microsoft.IfCondition",
+                  "$designer": {
+                    "id": "KzoeJ0"
+                  },
+                  "condition": "=dialog.api_response.content.result=='error'",
+                  "actions": [
+                    {
+                      "$kind": "Microsoft.SendActivity",
+                      "$designer": {
+                        "id": "hd41w4"
+                      },
+                      "activity": "${SendActivity_hd41w4()}"
+                    }
+                  ],
+                  "elseActions": [
+                    {
+                      "$kind": "Microsoft.ChoiceInput",
+                      "$designer": {
+                        "id": "Mv7k3k"
+                      },
+                      "defaultLocale": "en-us",
+                      "disabled": false,
+                      "maxTurnCount": 3,
+                      "alwaysPrompt": false,
+                      "allowInterruptions": true,
+                      "prompt": "${ChoiceInput_Prompt_Mv7k3k()}",
+                      "unrecognizedPrompt": "",
+                      "invalidPrompt": "",
+                      "choiceOptions": {
+                        "includeNumbers": true,
+                        "inlineOrMore": ", or ",
+                        "inlineOr": " or ",
+                        "inlineSeparator": ", "
+                      },
+                      "choices": [
+                        "Yes",
+                        "No"
+                      ],
+                      "property": "user.openconfirm",
+                      "recognizerOptions": {
+                        "recognizeOrdinals": true
+                      }
+                    },
+                    {
+                      "$kind": "Microsoft.IfCondition",
+                      "$designer": {
+                        "id": "dpIB72"
+                      },
+                      "condition": "=user.openconfirm=='Yes'",
+                      "actions": [
+                        {
+                          "$kind": "Microsoft.HttpRequest",
+                          "$designer": {
+                            "id": "ydyRrk"
+                          },
+                          "method": "POST",
+                          "url": "https://func-azure-bot.azurewebsites.net/api/updateTicketStatus?id=${user.ticketid}&status=OPN",
+                          "resultProperty": "dialog.api_response"
+                        },
+                        {
+                          "$kind": "Microsoft.IfCondition",
+                          "$designer": {
+                            "id": "ao6Ov7"
+                          },
+                          "condition": "=dialog.api_response.content.result=='success'",
+                          "actions": [
+                            {
+                              "$kind": "Microsoft.SendActivity",
+                              "$designer": {
+                                "id": "ks8C88"
+                              },
+                              "activity": "${SendActivity_ks8C88()}"
+                            }
+                          ],
+                          "elseActions": [
+                            {
+                              "$kind": "Microsoft.SendActivity",
+                              "$designer": {
+                                "id": "dpM7LZ"
+                              },
+                              "activity": "${SendActivity_dpM7LZ()}"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "$kind": "Microsoft.DeleteProperties",
+          "$designer": {
+            "id": "zT7uC8"
+          },
+          "properties": [
+            "user.ticketid",
+            "user.openconfirm",
+            "dialog.api_response"
+          ]
+        },
+        {
+          "$kind": "Microsoft.EndTurn",
+          "$designer": {
+            "id": "HfAsMR"
+          }
+        }
+      ]
+    },
+    {
+      "$kind": "Microsoft.OnBeginDialog",
+      "$designer": {
+        "id": "UPR31y",
+        "name": "BeginDialog"
+      },
+      "actions": [
+        {
+          "$kind": "Microsoft.SendActivity",
+          "$designer": {
+            "id": "mHmvni"
+          },
+          "activity": "${SendActivity_mHmvni()}"
+        }
+      ]
+    }
+  ],
+  "generator": "TicketDialog.lg",
+  "recognizer": "TicketDialog.lu.qna",
+  "id": "TicketDialog",
+  "defaultResultProperty": "dialog.result"
+}

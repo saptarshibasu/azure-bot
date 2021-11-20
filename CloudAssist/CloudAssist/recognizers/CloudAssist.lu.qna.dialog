@@ -1,0 +1,7 @@
+{
+  "$kind": "Microsoft.CrossTrainedRecognizerSet",
+  "recognizers": [
+    "CloudAssist.lu",
+    "CloudAssist.qna"
+  ]
+}

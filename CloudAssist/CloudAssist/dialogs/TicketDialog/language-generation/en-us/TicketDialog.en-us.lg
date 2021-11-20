@@ -1,0 +1,239 @@
+[import](common.lg)
+
+# TextInput_Prompt_bC8V2W()
+[Activity
+    Text = ${TextInput_Prompt_bC8V2W_text()}
+]
+
+# TextInput_Prompt_bC8V2W_text()
+- Please enter the ticket number.
+# TextInput_InvalidPrompt_bC8V2W()
+[Activity
+    Text = ${TextInput_InvalidPrompt_bC8V2W_text()}
+]
+
+# TextInput_InvalidPrompt_bC8V2W_text()
+- You've entered an invalid ticket number. Ticket number shouldbe in the format TKTXXXXXXX, where x is a number. Please try again.
+# SendActivity_iIwrRG()
+[Activity
+    Text = ${SendActivity_iIwrRG_text()}
+]
+
+# SendActivity_iIwrRG_text()
+- The ticket ${user.ticketid} is currently in status ${dialog.api_response.content.status}
+# SendActivity_Bz40wA()
+[Activity
+    Text = ${SendActivity_Bz40wA_text()}
+]
+
+# SendActivity_Bz40wA_text()
+- The ticket ${user.ticketid} does not exist.
+# SendActivity_scaOaO()
+[Activity
+    Text = ${SendActivity_scaOaO_text()}
+]
+
+# SendActivity_scaOaO_text()
+- There is an internal problem. Please try again.
+# TextInput_Prompt_xnAPk5()
+[Activity
+    Text = ${TextInput_Prompt_xnAPk5_text()}
+]
+
+# TextInput_Prompt_xnAPk5_text()
+- Please enter the ticket id.
+# TextInput_InvalidPrompt_xnAPk5()
+[Activity
+    Text = ${TextInput_InvalidPrompt_xnAPk5_text()}
+]
+
+# TextInput_InvalidPrompt_xnAPk5_text()
+- You've entered an invalid ticket number. Ticket number shouldbe in the format TKTXXXXXXX, where x is a number. Please try again.
+# SendActivity_cc2TyA()
+[Activity
+    Text = ${SendActivity_cc2TyA_text()}
+]
+
+# SendActivity_cc2TyA_text()
+- The ticket ${user.ticketid} is already in closed status.
+# SendActivity_kW23Fc()
+[Activity
+    Text = ${SendActivity_kW23Fc_text()}
+]
+
+# SendActivity_kW23Fc_text()
+- The ticket ${user.ticketid} does not exist.
+# SendActivity_aV3GYr()
+[Activity
+    Text = ${SendActivity_aV3GYr_text()}
+]
+
+# SendActivity_aV3GYr_text()
+- There is an internal error. Please try again.
+# ChoiceInput_Prompt_JB5wJK()
+[Activity
+    Text = ${ChoiceInput_Prompt_JB5wJK_text()}
+]
+
+# ChoiceInput_Prompt_JB5wJK_text()
+- Are you sure you want to close the ticket ${user.ticketid}?
+# SendActivity_jy0Iul()
+[Activity
+    Text = ${SendActivity_jy0Iul_text()}
+]
+
+# SendActivity_jy0Iul_text()
+- The ticket ${user.ticketid} is successfully closed.
+# SendActivity_RMlX8N()
+[Activity
+    Text = ${SendActivity_RMlX8N_text()}
+]
+
+# SendActivity_RMlX8N_text()
+- There is an internal error. Please try again.
+# TextInput_Prompt_LXnr80()
+[Activity
+    Text = ${TextInput_Prompt_LXnr80_text()}
+]
+
+# TextInput_Prompt_LXnr80_text()
+- Please enter the ticket id.
+# TextInput_InvalidPrompt_LXnr80()
+[Activity
+    Text = ${TextInput_InvalidPrompt_LXnr80_text()}
+]
+
+# TextInput_InvalidPrompt_LXnr80_text()
+- You've entered an invalid ticket number. Ticket number shouldbe in the format TKTXXXXXXX, where x is a number. Please try again.
+# SendActivity_p1u6ZT()
+[Activity
+    Text = ${SendActivity_p1u6ZT_text()}
+]
+
+# SendActivity_p1u6ZT_text()
+- The ticket ${user.ticketid} is already in open status.
+# SendActivity_q8EXGA()
+[Activity
+    Text = ${SendActivity_q8EXGA_text()}
+]
+
+# SendActivity_q8EXGA_text()
+- The ticket ${user.ticketid} does not exist.
+# SendActivity_hd41w4()
+[Activity
+    Text = ${SendActivity_hd41w4_text()}
+]
+
+# SendActivity_hd41w4_text()
+- There is an internal error. Please try again.
+# ChoiceInput_Prompt_Mv7k3k()
+[Activity
+    Text = ${ChoiceInput_Prompt_Mv7k3k_text()}
+]
+
+# ChoiceInput_Prompt_Mv7k3k_text()
+- Are you sure you want to open the ticket ${user.ticketid}?
+# SendActivity_ks8C88()
+[Activity
+    Text = ${SendActivity_ks8C88_text()}
+]
+
+# SendActivity_ks8C88_text()
+- The ticket ${user.ticketid} is successfully opened.
+# SendActivity_dpM7LZ()
+[Activity
+    Text = ${SendActivity_dpM7LZ_text()}
+]
+
+# SendActivity_dpM7LZ_text()
+- There is an internal error. Please try again.
+# SendActivity_mHmvni()
+[Activity
+    Attachments = ${SendActivity_mHmvni_attachment_c3nKEz()}
+]
+
+# SendActivity_mHmvni_attachment_c3nKEz()
+> TicketCard
+- ${json(CardTemplate(BotTourTicketCardHeader(),BotTourTicketCardBody(), BotTourTicketCardActions()))}
+
+# SkillTitleTwo()
+- Ticket Status
+
+# BotTourCardText()
+- Ticket dialog is now activated. You can now work with tickets. Try asking me the following.
+# BotTourTicketCardHeader()
+- ```
+{
+    "type": "Container",
+    "items": [
+        {
+            "type": "ColumnSet",
+            "columns": [
+                {
+                    "type": "Column",
+                    "width": 10,
+                    "spacing":"none",
+                    "verticalContentAlignment": "center",
+                    "items": [
+                        {
+                            "type": "Image",
+                            "url": "${PlaceholderIconUrl()}",
+                            "horizontalAlignment": "center"
+                        }
+                    ]
+                },
+                {
+                    "type": "Column",
+                    "width":"90",
+                    "spacing":"small",
+                    "verticalContentAlignment": "center",
+                    "items": [
+                        {
+                            "type": "TextBlock",
+                            "text": "${SkillTitleTwo()}",
+                            "size": "large",
+                            "weight": "Bolder"
+                        }
+                    ]
+                }
+            ]
+        }        
+    ]
+}
+```
+# BotTourTicketCardBody()
+-```
+{
+    "type": "Container",
+    "items": [
+        {
+            "type": "TextBlock",
+            "text": "${BotTourCardText()}",
+            "wrap": true
+        }        
+    ]
+}
+```
+# BotTourTicketCardActions()
+- ```
+{
+    "type": "ActionSet",
+    "actions": [
+        {
+            "type": "Action.Submit",
+            "title": "I want to see the details of a ticket.",
+            "data": "I want to see the details of a ticket."
+        },
+        {
+            "type": "Action.Submit",
+            "title": "I want to close a ticket.",
+            "data": "I want to close a ticket."
+        },
+        {
+            "type": "Action.Submit",
+            "title": "I want to open a ticket.",
+            "data": "I want to open a ticket."
+        }
+    ]
+}
+```

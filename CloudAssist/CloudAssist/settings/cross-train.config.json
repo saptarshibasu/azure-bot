@@ -1,0 +1,28 @@
+{
+  "CloudAssist.en-us": {
+    "rootDialog": true,
+    "triggers": {
+      "BotTour": [
+        "BotTourDialog.en-us"
+      ],
+      "Cancel": "",
+      "Feedback": [
+        "FeedbackDialog.en-us"
+      ],
+      "": [
+        "ChitchatDialog.en-us"
+      ],
+      "Ticket": [
+        "TicketDialog.en-us"
+      ]
+    }
+  },
+  "TicketDialog.en-us": {
+    "rootDialog": false,
+    "triggers": {
+      "ShowTicket": "",
+      "CloseTicket": "",
+      "OpenTicket": ""
+    }
+  }
+}

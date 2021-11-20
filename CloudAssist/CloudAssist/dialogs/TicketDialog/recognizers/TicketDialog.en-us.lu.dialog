@@ -1,0 +1,8 @@
+{
+  "$kind": "Microsoft.LuisRecognizer",
+  "id": "LUIS_TicketDialog",
+  "applicationId": "=settings.luis.TicketDialog_en_us_lu.appId",
+  "version": "=settings.luis.TicketDialog_en_us_lu.version",
+  "endpoint": "=settings.luis.endpoint",
+  "endpointKey": "=settings.luis.endpointKey"
+}

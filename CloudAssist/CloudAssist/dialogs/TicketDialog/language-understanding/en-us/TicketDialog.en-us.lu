@@ -1,0 +1,36 @@
+
+# ShowTicket
+- Show me TKT1234567
+- Show ticket TKT1234567
+- Please show me the details of ticket TKT1234567
+- Show me the status of ticket TKT1234567
+- Give me the details of TKT1234567
+- Can you give me the details of TKT1234567?
+- What is the status of ticket TKT1234567?
+- What is the current status of TKT1234567?
+- I want to see the status of ticket TKT1234567
+- I want to see the status of a ticket
+- Can you show me the status of a ticket?
+- Can you give me the details of a ticket?
+
+@ regex ticketid = /TKT[0-9]{7}/
+# CloseTicket
+- Close ticket TKT1234567
+- Please close the ticket TKT1234567
+- Can you please close the ticket TKT1234567?
+- I want to close the ticket TKT1234567
+- Close TKT1234567
+- Can you close a ticket?
+- I want to close a ticket
+
+@ regex ticketid = /TKT[0-9]{7}/
+# OpenTicket
+- Open ticket TKT1234567
+- Please open the ticket TKT1234567
+- Can you please open the ticket TKT1234567?
+- I want to open the ticket TKT1234567
+- Open TKT1234567
+- Can you open a ticket?
+- I want to open a ticket
+
+@ regex ticketid = /TKT[0-9]{7}/
