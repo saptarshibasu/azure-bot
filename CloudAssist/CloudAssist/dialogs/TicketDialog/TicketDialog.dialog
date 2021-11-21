@@ -117,7 +117,7 @@
         {
           "$kind": "Microsoft.EndTurn",
           "$designer": {
-            "id": "tRvlo6"
+            "id": "i6OtfO"
           }
         }
       ]
@@ -233,7 +233,7 @@
                       "disabled": false,
                       "maxTurnCount": 3,
                       "alwaysPrompt": false,
-                      "allowInterruptions": true,
+                      "allowInterruptions": false,
                       "prompt": "${ChoiceInput_Prompt_JB5wJK()}",
                       "unrecognizedPrompt": "",
                       "invalidPrompt": "",
@@ -249,7 +249,8 @@
                       ],
                       "property": "user.closeconfirm",
                       "recognizerOptions": {
-                        "recognizeOrdinals": true
+                        "recognizeOrdinals": true,
+                        "recognizeNumbers": true
                       }
                     },
                     {
@@ -431,7 +432,7 @@
                       "disabled": false,
                       "maxTurnCount": 3,
                       "alwaysPrompt": false,
-                      "allowInterruptions": true,
+                      "allowInterruptions": false,
                       "prompt": "${ChoiceInput_Prompt_Mv7k3k()}",
                       "unrecognizedPrompt": "",
                       "invalidPrompt": "",
@@ -447,7 +448,8 @@
                       ],
                       "property": "user.openconfirm",
                       "recognizerOptions": {
-                        "recognizeOrdinals": true
+                        "recognizeOrdinals": true,
+                        "recognizeNumbers": true
                       }
                     },
                     {
@@ -531,6 +533,21 @@
             "id": "mHmvni"
           },
           "activity": "${SendActivity_mHmvni()}"
+        }
+      ]
+    },
+    {
+      "$kind": "Microsoft.OnUnknownIntent",
+      "$designer": {
+        "id": "p1Upm8",
+        "name": "Unknown intent"
+      },
+      "actions": [
+        {
+          "$kind": "Microsoft.EndDialog",
+          "$designer": {
+            "id": "6Oe4tg"
+          }
         }
       ]
     }
