@@ -2,10 +2,6 @@
           > !# @source.multiTurn=true
           > # QnA pairs
 
-# ? Who is Benjamin Franklin?
-```
-Benjamin Franklin was an American polymath who was active as a writer, scientist, inventor, statesman, diplomat, printer, publisher and political philosopher. Among the leading intellectuals of his time, Franklin was one of the Founding Fathers of the United States, a drafter and signer of the United States Declaration of Independence, and the first United States postmaster general. As a scientist, he was a major figure in the American Enlightenment and the history of physics for his discoveries and theories regarding electricity. As an inventor, he is known for the lightning rod, bifocals, and the Franklin stove, among other inventions.
-```
 > !# @qna.pair.source = https://www.fi.edu/benjamin-franklin-faq
 
 <a id = "1"></a>
@@ -399,5 +395,13 @@ By visiting The Franklin Institute, the guest voluntarily assumes all risks rela
  The Franklin Institute is a 501(C)(3) nonprofit registered in the U.S. under EIN: 23-1370501.
 ```
 
+> !# @qna.pair.source = https://www.fi.edu/benjamin-franklin-faq
+
+<a id = "35"></a>
+
+# ? Who is Benjamin Franklin?
+```markdown
+Benjamin Franklin was an American polymath who was active as a writer, scientist, inventor, statesman, diplomat, printer, publisher and political philosopher. Among the leading intellectuals of his time, Franklin was one of the Founding Fathers of the United States, a drafter and signer of the United States Declaration of Independence, and the first United States postmaster general. As a scientist, he was a major figure in the American Enlightenment and the history of physics for his discoveries and theories regarding electricity. As an inventor, he is known for the lightning rod, bifocals, and the Franklin stove, among other inventions.
+```
 
           
