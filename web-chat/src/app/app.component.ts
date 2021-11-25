@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
 
     public ngOnInit(): void {
         const directLine = window.WebChat.createDirectLine({
-            secret: "iP9D4hsDcds.9bA6jWoEgDyfuIgu5LYVCx2TPNIH9ymR9NcZOgmjgmo",
+            secret: "aV8hKT2Rqac.WyCDM4Xpyn5Zv55V2gIvMoKTonO_M17i0i2ROijbRQ4",
             webSocket: false
         });
 
@@ -33,7 +33,7 @@ export class AppComponent implements OnInit {
             this.botWindowElement.nativeElement
         );
 
-        directLine
+        /*directLine
             .postActivity({
                 from: { id: "USER_ID", name: "USER_NAME" },
                 name: "requestWelcomeDialog",
@@ -43,6 +43,6 @@ export class AppComponent implements OnInit {
             .subscribe(
                 (id: any) => console.log(`Posted activity, assigned ID ${id}`),
                 (error: any) => console.log(`Error posting activity ${error}`)
-            );
+            );*/
     }
 }
