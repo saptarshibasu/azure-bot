@@ -535,21 +535,6 @@
           "activity": "${SendActivity_mHmvni()}"
         }
       ]
-    },
-    {
-      "$kind": "Microsoft.OnUnknownIntent",
-      "$designer": {
-        "id": "p1Upm8",
-        "name": "Unknown intent"
-      },
-      "actions": [
-        {
-          "$kind": "Microsoft.EndDialog",
-          "$designer": {
-            "id": "6Oe4tg"
-          }
-        }
-      ]
     }
   ],
   "generator": "TicketDialog.lg",

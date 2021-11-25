@@ -132,7 +132,7 @@
             }
         },
         "LUISPredictionResourceName": {
-            "defaultValue": "luis0-pred-azure-bot",
+            "defaultValue": "luis-pred-azure-bot",
             "type": "String",
             "metadata": {
                 "description": "The name for the LUIS Prediction resource."
@@ -523,7 +523,7 @@
             "name": "[parameters('LUISPredictionResourceName')]",
             "location": "westus",
             "sku": {
-                "name": "S0"
+                "name": "F0"
             },
             "kind": "LUIS",
             "properties": {

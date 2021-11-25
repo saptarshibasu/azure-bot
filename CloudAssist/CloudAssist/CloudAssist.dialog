@@ -456,24 +456,7 @@
             "id": "vpqOH3"
           },
           "activityProcessed": true,
-          "dialog": "TicketDialog",
-          "resultProperty": "turn.ticketresult"
-        },
-        {
-          "$kind": "Microsoft.IfCondition",
-          "$designer": {
-            "id": "jbKmuJ"
-          },
-          "condition": "=not(turn.result)",
-          "actions": [
-            {
-              "$kind": "Microsoft.RepeatDialog",
-              "$designer": {
-                "id": "CUz3Fy"
-              },
-              "activityProcessed": true
-            }
-          ]
+          "dialog": "TicketDialog"
         }
       ]
     }
